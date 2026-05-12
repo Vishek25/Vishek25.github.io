@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Reminders Calendar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .test-notification {
+            background: #ff9800;
+        }
+        
+        .test-notification:hover {
+            background: #f57c00;
+        }
+        
+        .day-names {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .day-name {
+            padding: 10px;
+            background: #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        #calendarGrid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .calendar-cell {
+            border: 1px solid #ccc;
+            min-height: 100px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .calendar-cell:hover {
+            background: #f0f0f0;
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .date-number {
+            font-weight: bold;
+            font-size: 18px;
+            position: absolute;
+            top: 8px;
+            left: 8px;
+        }
+        
+        /* Center badge container */
+        .badge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .badge {
+            padding: 8px 12px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .badge-pending {
+            background: #ff4444;
+            color: white;
+        }
+        
+        .badge-completed {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .badge-none {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        /* Side Panel */
+        #sidePanel {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            background: white;
+            box-shadow: -2px 0 20px rgba(0,0,0,0.2);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #sidePanel.open {
+            right: 0;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .panel-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+        
+        #closePanel {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+        }
+        
+        #closePanel:hover {
+            color: #333;
+            background: none;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .section-title.pending {
+            color: #ff4444;
+        }
+        
+        .section-title.completed {
+            color: #4CAF50;
+        }
+        
+        .reminder-item-panel {
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 10px;
+            background: #fafafa;
+            transition: all 0.2s;
+        }
+        
+        .reminder-item-panel.pending {
+            border-left: 4px solid #ff4444;
+        }
+        
+        .reminder-item-panel.completed {
+            border-left: 4px solid #4CAF50;
+            opacity: 0.7;
+        }
+        
+        .reminder-checkbox {
+            margin-right: 10px;
+            transform: scale(1.1);
+            cursor: pointer;
+        }
+        
+        .reminder-text-panel {
+            font-size: 14px;
+            word-break: break-word;
+        }
+        
+        .reminder-time {
+            font-weight: bold;
+            color: #4CAF50;
+            margin-right: 8px;
+        }
+        
+        .repeat-badge {
+            font-size: 11px;
+            color: #666;
+            margin-left: 8px;
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        .delete-btn-panel {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #f44336;
+            padding: 0 8px;
+        }
+        
+        .delete-btn-panel:hover {
+            color: #d32f2f;
+            background: none;
+        }
+        
+        #panelAddBtn {
+            margin-top: 20px;
+            padding: 12px;
+            width: 100%;
+            background: #2196F3;
+        }
+        
+        #panelAddBtn:hover {
+            background: #0b7dda;
+        }
+        
+        .empty-panel {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+        }
+        
+        /* Add Form Modal */
+        #addFormModal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 20px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: 0 -2px 20px rgba(0,0,0,0.2);
+            z-index: 1001;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        #addFormModal.open {
+            transform: translateY(0);
+        }
+        
+        #addFormModal input, #addFormModal select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .modal-buttons button {
+            flex: 1;
+        }
+        
+        .cancel-modal {
+            background: #f44336;
+        }
+        
+        .cancel-modal:hover {
+            background: #da190b;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .day-name {
+                font-size: 11px;
+                padding: 8px 4px;
+            }
+            
+            .calendar-cell {
+                min-height: 80px;
+            }
+            
+            .date-number {
+                font-size: 14px;
+                top: 4px;
+                left: 4px;
+            }
+            
+            .badge {
+                padding: 4px 8px;
+                font-size: 11px;
+                min-width: 45px;
+            }
+            
+            .badge-container {
+                gap: 3px;
+            }
+            
+            #sidePanel {
+                max-width: 100%;
+            }
+        }
+        
+        /* Overlay */
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 998;
+            display: none;
+        }
+        
+        #overlay.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<h1>📅 My Reminders</h1>
+
+<div class="calendar-header">
+    <div class="nav-buttons">
+        <button id="prevMonth">◀ Prev</button>
+        <button id="nextMonth">Next ▶</button>
+    </div>
+    <span id="monthYear" style="font-size: 1.5rem; font-weight: bold;"></span>
+    <button id="testNotificationBtn" class="test-notification">🔔 Test Notify</button>
+</div>
+
+<div class="day-names">
+    <div class="day-name">Sun</div>
+    <div class="day-name">Mon</div>
+    <div class="day-name">Tue</div>
+    <div class="day-name">Wed</div>
+    <div class="day-name">Thu</div>
+    <div class="day-name">Fri</div>
+    <div class="day-name">Sat</div>
+</div>
+
+<div id="calendarGrid"></div>
+
+<!-- Overlay -->
+<div id="overlay"></div>
+
+<!-- Side Panel -->
+<div id="sidePanel">
+    <div class="panel-header">
+        <h3 id="panelDate"></h3>
+        <button id="closePanel">✕</button>
+    </div>
+    <div id="panelReminders">
+        <div class="empty-panel">Loading...</div>
+    </div>
+    <button id="panelAddBtn">+ Add Reminder</button>
+</div>
+
+<!-- Add Form Modal -->
+<div id="addFormModal">
+    <h3 id="modalTitle">Add Reminder</h3>
+    <input type="text" id="taskTitle" placeholder="What needs to be done?" autocomplete="off">
+    <input type="time" id="taskTime" value="09:00">
+    <select id="repeatType">
+        <option value="none">One time</option>
+        <option value="daily">Daily (every day)</option>
+        <option value="weekly">Weekly (same day each week)</option>
+        <option value="monthly">Monthly (same date each month)</option>
+    </select>
+    <div class="modal-buttons">
+        <button id="saveReminderBtn">Save</button>
+        <button id="cancelModalBtn" class="cancel-modal">Cancel</button>
+    </div>
+</div>
+
+<script>
+    // ========== DATA ==========
+    let reminders = [];
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth();
+    let selectedPanelDate = null;
+    let tempSelectedDate = null;
+    
+    // ========== STORAGE ==========
+    function saveReminders() {
+        localStorage.setItem("reminders", JSON.stringify(reminders));
+    }
+    
+    function loadReminders() {
+        let stored = localStorage.getItem("reminders");
+        if(stored) {
+            reminders = JSON.parse(stored);
+            for(let i = 0; i < reminders.length; i++) {
+                if(!reminders[i].completedDates) {
+                    reminders[i].completedDates = [];
+                }
+            }
+            saveReminders();
+        } else {
+            // Add example reminder
+            let today = new Date();
+            let todayStr = today.toISOString().slice(0,10);
+            reminders = [{
+                id: Date.now(),
+                title: "Welcome! Add your own reminders",
+                time: "09:00",
+                repeat: "none",
+                completedDates: [],
+                date: todayStr,
+                createdDate: todayStr
+            }];
+            saveReminders();
+        }
+    }
+    
+    // ========== NOTIFICATIONS ==========
+    function requestNotificationPermission() {
+        if ("Notification" in window) {
+            if (Notification.permission === "default") {
+                Notification.requestPermission();
+            }
+        }
+    }
+    
+    function sendNotification(title, message) {
+        if ("Notification" in window && Notification.permission === "granted") {
+            new Notification("⏰ " + title, {
+                body: message,
+                icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234CAF50'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z'/%3E%3C/svg%3E",
+                silent: false
+            });
+        }
+    }
+    
+    function testNotification() {
+        sendNotification("Test Notification", "If you see this, notifications are working!");
+    }
+    
+    function checkDueReminders() {
+        let now = new Date();
+        let currentTime = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        let todayReminders = getRemindersForDate(now.getFullYear(), now.getMonth(), now.getDate());
+        
+        for(let i = 0; i < todayReminders.length; i++) {
+            let rem = todayReminders[i];
+            if(rem.time === currentTime) {
+                let notificationKey = `notified_${rem.id}_${now.toISOString().slice(0,10)}`;
+                if(!localStorage.getItem(notificationKey)) {
+                    sendNotification(rem.title, `Due at ${rem.time}`);
+                    localStorage.setItem(notificationKey, "true");
+                    setTimeout(() => localStorage.removeItem(notificationKey), 300000);
+                }
+            }
+        }
+    }
+    
+    // ========== TOGGLE COMPLETE ==========
+    function toggleComplete(reminderId, dateStr, isChecked) {
+        for(let i = 0; i < reminders.length; i++) {
+            if(reminders[i].id === reminderId) {
+                if(isChecked) {
+                    if(!reminders[i].completedDates.includes(dateStr)) {
+                        reminders[i].completedDates.push(dateStr);
+                    }
+                } else {
+                    reminders[i].completedDates = reminders[i].completedDates.filter(d => d !== dateStr);
+                }
+                break;
+            }
+        }
+        saveReminders();
+        renderCalendar();
+        if(selectedPanelDate) {
+            refreshSidePanel();
+        }
+    }
+    
+    // ========== DELETE ==========
+    function deleteReminder(reminderId) {
+        if(confirm("Delete this reminder forever?")) {
+            reminders = reminders.filter(r => r.id !== reminderId);
+            saveReminders();
+            renderCalendar();
+            if(selectedPanelDate) {
+                refreshSidePanel();
+            }
+        }
+    }
+    
+    // ========== GET REMINDERS FOR DATE ==========
+    function getRemindersForDate(year, month, day) {
+        let dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        let todaysReminders = [];
+        
+        for(let i = 0; i < reminders.length; i++) {
+            let r = reminders[i];
+            
+            if(r.repeat === "daily") {
+                todaysReminders.push(r);
+            }
+            else if(r.repeat === "weekly") {
+                let reminderDate = new Date(r.createdDate);
+                let reminderWeekday = reminderDate.getDay();
+                let targetDate = new Date(year, month, day);
+                if(reminderWeekday === targetDate.getDay()) {
+                    todaysReminders.push(r);
+                }
+            }
+            else if(r.repeat === "monthly") {
+                let reminderDateNum = new Date(r.createdDate).getDate();
+                if(reminderDateNum === day) {
+                    todaysReminders.push(r);
+                }
+            }
+            else {
+                if(r.date === dateStr) {
+                    todaysReminders.push(r);
+                }
+            }
+        }
+        
+        todaysReminders.sort((a, b) => a.time.localeCompare(b.time));
+        return todaysReminders;
+    }
+    
+    // ========== GET STATS FOR DATE ==========
+    function getDateStats(year, month, day) {
+        let dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        let reminders = getRemindersForDate(year, month, day);
+        let pending = 0;
+        let completed = 0;
+        
+        for(let i = 0; i < reminders.length; i++) {
+            if(reminders[i].completedDates && reminders[i].completedDates.includes(dateStr)) {
+                completed++;
+            } else {
+                pending++;
+            }
+        }
+        
+        return { pending, completed, total: reminders.length };
+    }
+    
+    // ========== SIDE PANEL ==========
+    function refreshSidePanel() {
+        if(!selectedPanelDate) return;
+        
+        let { year, month, day } = selectedPanelDate;
+        let dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        document.getElementById("panelDate").innerHTML = `📅 ${dateStr}`;
+        
+        let dayReminders = getRemindersForDate(year, month, day);
+        let panelDiv = document.getElementById("panelReminders");
+        
+        if(dayReminders.length === 0) {
+            panelDiv.innerHTML = '<div class="empty-panel">✨ No reminders<br>Tap "+ Add Reminder"</div>';
+            return;
+        }
+        
+        // Separate pending and completed
+        let pendingReminders = [];
+        let completedReminders = [];
+        
+        for(let i = 0; i < dayReminders.length; i++) {
+            let rem = dayReminders[i];
+            let isCompleted = rem.completedDates && rem.completedDates.includes(dateStr);
+            if(isCompleted) {
+                completedReminders.push(rem);
+            } else {
+                pendingReminders.push(rem);
+            }
+        }
+        
+        panelDiv.innerHTML = "";
+        
+        // Pending section (RED)
+        if(pendingReminders.length > 0) {
+            let pendingTitle = document.createElement("div");
+            pendingTitle.className = "section-title pending";
+            pendingTitle.innerHTML = `⚠️ TO DO (${pendingReminders.length})`;
+            panelDiv.appendChild(pendingTitle);
+            
+            for(let i = 0; i < pendingReminders.length; i++) {
+                let rem = pendingReminders[i];
+                let remDiv = createReminderElement(rem, dateStr, false);
+                panelDiv.appendChild(remDiv);
+            }
+        }
+        
+        // Completed section (GREEN)
+        if(completedReminders.length > 0) {
+            let completedTitle = document.createElement("div");
+            completedTitle.className = "section-title completed";
+            completedTitle.innerHTML = `✅ COMPLETED (${completedReminders.length})`;
+            panelDiv.appendChild(completedTitle);
+            
+            for(let i = 0; i < completedReminders.length; i++) {
+                let rem = completedReminders[i];
+                let remDiv = createReminderElement(rem, dateStr, true);
+                panelDiv.appendChild(remDiv);
+            }
+        }
+    }
+    
+    function createReminderElement(rem, dateStr, isCompleted) {
+        let remDiv = document.createElement("div");
+        remDiv.className = `reminder-item-panel ${isCompleted ? 'completed' : 'pending'}`;
+        
+        let repeatIcon = "";
+        if(rem.repeat === "daily") repeatIcon = "🔄 Daily";
+        else if(rem.repeat === "weekly") repeatIcon = "📆 Weekly";
+        else if(rem.repeat === "monthly") repeatIcon = "📅 Monthly";
+        else repeatIcon = "🔹 One-time";
+        
+        let cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.className = "reminder-checkbox";
+        cb.checked = isCompleted;
+        
+        let textSpan = document.createElement("span");
+        textSpan.className = "reminder-text-panel";
+        textSpan.innerHTML = `<span class="reminder-time">${rem.time}</span> ${rem.title} <span class="repeat-badge">${repeatIcon}</span>`;
+        if(isCompleted) {
+            textSpan.style.textDecoration = "line-through";
+            textSpan.style.opacity = "0.6";
+        }
+        
+        let delBtn = document.createElement("button");
+        delBtn.innerText = "🗑️";
+        delBtn.className = "delete-btn-panel";
+        delBtn.onclick = () => deleteReminder(rem.id);
+        
+        remDiv.appendChild(cb);
+        remDiv.appendChild(textSpan);
+        remDiv.appendChild(delBtn);
+        
+        cb.addEventListener("change", () => {
+            toggleComplete(rem.id, dateStr, cb.checked);
+        });
+        
+        return remDiv;
+    }
+    
+    function showSidePanel(year, month, day) {
+        selectedPanelDate = { year, month, day };
+        refreshSidePanel();
+        document.getElementById("sidePanel").classList.add("open");
+        document.getElementById("overlay").classList.add("show");
+    }
+    
+    function closeSidePanel() {
+        document.getElementById("sidePanel").classList.remove("open");
+        document.getElementById("overlay").classList.remove("show");
+        selectedPanelDate = null;
+    }
+    
+    // ========== ADD FORM ==========
+    function showAddForm(year, month, day) {
+        tempSelectedDate = { year, month, day };
+        let dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        document.getElementById("modalTitle").innerHTML = `➕ Add Reminder for ${dateStr}`;
+        document.getElementById("taskTitle").value = "";
+        document.getElementById("taskTime").value = "09:00";
+        document.getElementById("repeatType").value = "none";
+        document.getElementById("addFormModal").classList.add("open");
+        document.getElementById("overlay").classList.add("show");
+        document.getElementById("taskTitle").focus();
+    }
+    
+    function closeAddForm() {
+        document.getElementById("addFormModal").classList.remove("open");
+        document.getElementById("overlay").classList.remove("show");
+        tempSelectedDate = null;
+    }
+    
+    function addReminder() {
+        let title = document.getElementById("taskTitle").value.trim();
+        let time = document.getElementById("taskTime").value;
+        let repeat = document.getElementById("repeatType").value;
+        
+        if(title === "") {
+            alert("Please type a task");
+            return;
+        }
+        
+        if(!tempSelectedDate) {
+            alert("Please select a date first");
+            return;
+        }
+        
+        let dateStr = `${tempSelectedDate.year}-${String(tempSelectedDate.month+1).padStart(2,'0')}-${String(tempSelectedDate.day).padStart(2,'0')}`;
+        
+        let newReminder = {
+            id: Date.now(),
+            title: title,
+            time: time,
+            repeat: repeat,
+            completedDates: [],
+            date: dateStr,
+            createdDate: new Date().toISOString().slice(0,10)
+        };
+        
+        reminders.push(newReminder);
+        saveReminders();
+        renderCalendar();
+        closeAddForm();
+        
+        if(selectedPanelDate && 
+           selectedPanelDate.year === tempSelectedDate.year &&
+           selectedPanelDate.month === tempSelectedDate.month &&
+           selectedPanelDate.day === tempSelectedDate.day) {
+            refreshSidePanel();
+        }
+    }
+    
+    // ========== RENDER CALENDAR ==========
+    function renderCalendar() {
+        let firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+        let startWeekday = firstDayOfMonth.getDay();
+        let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        
+        let monthNames = ["January", "February", "March", "April", "May", "June", 
+                          "July", "August", "September", "October", "November", "December"];
+        document.getElementById("monthYear").innerText = `${monthNames[currentMonth]} ${currentYear}`;
+        
+        let grid = document.getElementById("calendarGrid");
+        grid.innerHTML = "";
+        
+        // Empty cells for days before month starts
+        for(let i = 0; i < startWeekday; i++) {
+            let emptyCell = document.createElement("div");
+            emptyCell.className = "calendar-cell";
+            emptyCell.style.backgroundColor = "#f9f9f9";
+            emptyCell.style.cursor = "default";
+            grid.appendChild(emptyCell);
+        }
+        
+        // Calendar cells
+        for(let day = 1; day <= daysInMonth; day++) {
+            let cell = document.createElement("div");
+            cell.className = "calendar-cell";
+            
+            // Date number (top left)
+            let dateNum = document.createElement("div");
+            dateNum.className = "date-number";
+            dateNum.innerText = day;
+            cell.appendChild(dateNum);
+            
+            // Highlight today
+            let today = new Date();
+            if(today.getFullYear() === currentYear && 
+               today.getMonth() === currentMonth && 
+               today.getDate() === day) {
+                cell.style.backgroundColor = "#fff3cd";
+                cell.style.border = "2px solid #ffc107";
+            }
+            
+            // Get stats for this day
+            let stats = getDateStats(currentYear, currentMonth, day);
+            
+            // Center badge container
+            let badgeContainer = document.createElement("div");
+            badgeContainer.className = "badge-container";
+            
+            if(stats.total > 0) {
+                // Pending badge (RED) - only show if there are pending tasks
+                if(stats.pending > 0) {
+                    let pendingBadge = document.createElement("div");
+                    pendingBadge.className = "badge badge-pending";
+                    pendingBadge.innerText = `${stats.pending} pending`;
+                    badgeContainer.appendChild(pendingBadge);
+                }
+                
+                // Completed badge (GREEN) - only show if there are completed tasks
+                if(stats.completed > 0) {
+                    let completedBadge = document.createElement("div");
+                    completedBadge.className = "badge badge-completed";
+                    completedBadge.innerText = `${stats.completed} done`;
+                    badgeContainer.appendChild(completedBadge);
+                }
+            } else {
+                let noneBadge = document.createElement("div");
+                noneBadge.className = "badge-none";
+                noneBadge.innerText = "—";
+                badgeContainer.appendChild(noneBadge);
+            }
+            
+            cell.appendChild(badgeContainer);
+            
+            // Click to open side panel
+            cell.onclick = function() {
+                showSidePanel(currentYear, currentMonth, day);
+            };
+            
+            grid.appendChild(cell);
+        }
+    }
+    
+    // ========== EVENT LISTENERS ==========
+    document.getElementById("prevMonth").onclick = () => {
+        currentMonth--;
+        if(currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        renderCalendar();
+    };
+    
+    document.getElementById("nextMonth").onclick = () => {
+        currentMonth++;
+        if(currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        renderCalendar();
+    };
+    
+    document.getElementById("closePanel").onclick = closeSidePanel;
+    document.getElementById("overlay").onclick = () => {
+        closeSidePanel();
+        closeAddForm();
+    };
+    document.getElementById("saveReminderBtn").onclick = addReminder;
+    document.getElementById("cancelModalBtn").onclick = closeAddForm;
+    document.getElementById("testNotificationBtn").onclick = testNotification;
+    
+    document.getElementById("panelAddBtn").onclick = () => {
+        if(selectedPanelDate) {
+            showAddForm(selectedPanelDate.year, selectedPanelDate.month, selectedPanelDate.day);
+        } else {
+            alert("Please click on a date first");
+        }
+    };
+    
+    // ========== INITIALIZE ==========
+    loadReminders();
+    renderCalendar();
+    requestNotificationPermission();
+    setInterval(checkDueReminders, 60000);
+    setTimeout(checkDueReminders, 1000);
+</script>
+
+</body>
+</html>
