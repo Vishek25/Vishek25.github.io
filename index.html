@@ -304,6 +304,16 @@
             opacity: 0.6;
         }
 
+        /* Mobile badge text - numbers only */
+        @media (max-width: 600px) {
+            .badge-pending {
+                font-size: 0.65rem;
+            }
+            .badge-completed {
+                font-size: 0.65rem;
+            }
+        }
+
         /* Side Panel */
         #sidePanel {
             position: fixed;
@@ -693,22 +703,22 @@
     }
 
     function loadReminders() {
-		let stored = localStorage.getItem("reminders");
-		if (stored) {
-			reminders = JSON.parse(stored);
-			for (let i = 0; i < reminders.length; i++) {
-				if (!reminders[i].completedDates) reminders[i].completedDates = [];
-				// Migrate old reminders to have repeatReferenceDate
-				if (!reminders[i].repeatReferenceDate && (reminders[i].repeat === "weekly" || reminders[i].repeat === "monthly")) {
-					reminders[i].repeatReferenceDate = reminders[i].createdDate;
-				}
-			}
-			saveReminders();
-		} else {
-			reminders = [];
-			saveReminders();
-		}
-	}
+        let stored = localStorage.getItem("reminders");
+        if (stored) {
+            reminders = JSON.parse(stored);
+            for (let i = 0; i < reminders.length; i++) {
+                if (!reminders[i].completedDates) reminders[i].completedDates = [];
+                // Migrate old reminders to have repeatReferenceDate
+                if (!reminders[i].repeatReferenceDate && (reminders[i].repeat === "weekly" || reminders[i].repeat === "monthly")) {
+                    reminders[i].repeatReferenceDate = reminders[i].createdDate;
+                }
+            }
+            saveReminders();
+        } else {
+            reminders = [];
+            saveReminders();
+        }
+    }
 
     // ========== NOTIFICATIONS ==========
     function requestNotificationPermission() {
@@ -770,40 +780,32 @@
     }
 
     function getRemindersForDate(year, month, day) {
-		let dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-		let result = [];
-		let targetDate = new Date(year, month, day);
-    
-		for (let r of reminders) {
-			if (r.repeat === "daily") {
-				// Daily: show every day
-				result.push(r);
-			} 
-			else if (r.repeat === "weekly") {
-				// Weekly: show on same weekday as the reference date
-				// Use r.repeatReferenceDate if it exists, otherwise use createdDate
-				let referenceDate = r.repeatReferenceDate ? new Date(r.repeatReferenceDate) : new Date(r.createdDate);
-				let referenceWeekday = referenceDate.getDay();
-				let targetWeekday = targetDate.getDay();
-				if (referenceWeekday === targetWeekday) {
-					result.push(r);
-				}
-			} 
-			else if (r.repeat === "monthly") {
-				// Monthly: show on same day of month as the reference date
-				let referenceDate = r.repeatReferenceDate ? new Date(r.repeatReferenceDate) : new Date(r.createdDate);
-				let referenceDayOfMonth = referenceDate.getDate();
-				if (referenceDayOfMonth === day) {
-					result.push(r);
-				}
-			} 
-			else if (r.date === dateStr) {
-				// One-time: only on exact date
-				result.push(r);
-			}
-		}
-		return result.sort((a, b) => a.time.localeCompare(b.time));
-	}
+        let dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        let result = [];
+        let targetDate = new Date(year, month, day);
+        
+        for (let r of reminders) {
+            if (r.repeat === "daily") {
+                result.push(r);
+            } 
+            else if (r.repeat === "weekly") {
+                let referenceDate = r.repeatReferenceDate ? new Date(r.repeatReferenceDate) : new Date(r.createdDate);
+                if (referenceDate.getDay() === targetDate.getDay()) {
+                    result.push(r);
+                }
+            } 
+            else if (r.repeat === "monthly") {
+                let referenceDate = r.repeatReferenceDate ? new Date(r.repeatReferenceDate) : new Date(r.createdDate);
+                if (referenceDate.getDate() === day) {
+                    result.push(r);
+                }
+            } 
+            else if (r.date === dateStr) {
+                result.push(r);
+            }
+        }
+        return result.sort((a, b) => a.time.localeCompare(b.time));
+    }
 
     function getDateStats(year, month, day) {
         let dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -926,44 +928,44 @@
     }
 
     function addReminder() {
-		let title = document.getElementById("taskTitle").value.trim();
-		let time = document.getElementById("taskTime").value;
-		let repeat = document.getElementById("repeatType").value;
-    
-		if (!title) {
-			alert("Please type a task");
-			return;
-		}
-		if (!tempSelectedDate) {
-			alert("Select a date first");
-			return;
-		}
-    
-		let dateStr = `${tempSelectedDate.year}-${String(tempSelectedDate.month + 1).padStart(2, '0')}-${String(tempSelectedDate.day).padStart(2, '0')}`;
-    
-		let newReminder = {
-			id: Date.now(),
-			title: title,
-			time: time,
-			repeat: repeat,
-			completedDates: [],
-			date: dateStr,
-			createdDate: new Date().toISOString().slice(0, 10),
-			repeatReferenceDate: `${tempSelectedDate.year}-${String(tempSelectedDate.month + 1).padStart(2, '0')}-${String(tempSelectedDate.day).padStart(2, '0')}`
-		};
-		
-		reminders.push(newReminder);
-		saveReminders();
-		renderCalendar();
-		closeAddForm();
-    
-		if (selectedPanelDate &&
-			selectedPanelDate.year === tempSelectedDate.year &&
-			selectedPanelDate.month === tempSelectedDate.month &&
-			selectedPanelDate.day === tempSelectedDate.day) {
-			refreshSidePanel();
-		}
-	}
+        let title = document.getElementById("taskTitle").value.trim();
+        let time = document.getElementById("taskTime").value;
+        let repeat = document.getElementById("repeatType").value;
+        
+        if (!title) {
+            alert("Please type a task");
+            return;
+        }
+        if (!tempSelectedDate) {
+            alert("Select a date first");
+            return;
+        }
+        
+        let dateStr = `${tempSelectedDate.year}-${String(tempSelectedDate.month + 1).padStart(2, '0')}-${String(tempSelectedDate.day).padStart(2, '0')}`;
+        
+        let newReminder = {
+            id: Date.now(),
+            title: title,
+            time: time,
+            repeat: repeat,
+            completedDates: [],
+            date: dateStr,
+            createdDate: new Date().toISOString().slice(0, 10),
+            repeatReferenceDate: dateStr
+        };
+        
+        reminders.push(newReminder);
+        saveReminders();
+        renderCalendar();
+        closeAddForm();
+        
+        if (selectedPanelDate &&
+            selectedPanelDate.year === tempSelectedDate.year &&
+            selectedPanelDate.month === tempSelectedDate.month &&
+            selectedPanelDate.day === tempSelectedDate.day) {
+            refreshSidePanel();
+        }
+    }
 
     // ========== RENDER CALENDAR ==========
     function renderCalendar() {
@@ -1010,13 +1012,22 @@
                 if (stats.pending > 0) {
                     let pend = document.createElement("div");
                     pend.className = "badge badge-pending";
-                    pend.innerText = `${stats.pending} pending`;
+                    // Responsive text: numbers only on mobile, full words on desktop
+                    if (window.innerWidth <= 600) {
+                        pend.innerText = `${stats.pending}`;
+                    } else {
+                        pend.innerText = `${stats.pending} pending`;
+                    }
                     badgeContainer.appendChild(pend);
                 }
                 if (stats.completed > 0) {
                     let comp = document.createElement("div");
                     comp.className = "badge badge-completed";
-                    comp.innerText = `${stats.completed} done`;
+                    if (window.innerWidth <= 600) {
+                        comp.innerText = `${stats.completed}`;
+                    } else {
+                        comp.innerText = `${stats.completed} done`;
+                    }
                     badgeContainer.appendChild(comp);
                 }
             } else {
@@ -1094,6 +1105,11 @@
             alert("Please click on a date first");
         }
     };
+
+    // Update badges when window resizes
+    window.addEventListener("resize", () => {
+        renderCalendar();
+    });
 
     // ========== INITIALIZE ==========
     loadReminders();
