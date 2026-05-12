@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>My Reminders Calendar</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 24px 20px;
+            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             transition: all 0.3s ease;
@@ -32,6 +32,7 @@
 
         body.dark-mode .calendar-cell {
             background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         body.dark-mode .calendar-cell:hover {
@@ -40,22 +41,22 @@
 
         body.dark-mode .date-number {
             color: #f1f5f9;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.5);
         }
 
         body.dark-mode .day-name {
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(30, 41, 59, 0.8);
             color: #cbd5e1;
         }
 
         body.dark-mode #sidePanel {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-left-color: #334155;
         }
 
         body.dark-mode .reminder-item-panel {
             background: #1e293b;
             border-color: #334155;
-            color: #f1f5f9;
         }
 
         body.dark-mode .reminder-text-panel {
@@ -64,6 +65,7 @@
 
         body.dark-mode #addFormModal {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-top-color: #334155;
         }
 
         body.dark-mode #addFormModal input,
@@ -75,6 +77,14 @@
 
         body.dark-mode .panel-header h3 {
             color: #a78bfa;
+        }
+
+        body.dark-mode .panel-header {
+            border-bottom-color: #334155;
+        }
+
+        body.dark-mode .section-title {
+            border-bottom-color: #334155;
         }
 
         body.dark-mode .badge-none {
@@ -90,10 +100,14 @@
             color: #cbd5e1;
         }
 
+        body.dark-mode .empty-panel {
+            color: #94a3b8;
+        }
+
         h1 {
             font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             text-align: center;
             color: white;
             text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -104,9 +118,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.75rem;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(8px);
             padding: 0.75rem 1.5rem;
@@ -115,11 +129,11 @@
 
         .nav-buttons {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
         button {
-            padding: 10px 22px;
+            padding: 8px 18px;
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
@@ -129,7 +143,6 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 40px;
             transition: all 0.2s ease;
-            letter-spacing: 0.3px;
         }
 
         button:hover {
@@ -137,7 +150,7 @@
             color: #4f46e5;
             transform: translateY(-2px);
             border-color: transparent;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
 
         #themeToggleBtn {
@@ -150,15 +163,21 @@
             color: #0f172a;
         }
 
+        body.dark-mode #themeToggleBtn:hover {
+            background: #fbbf24;
+            color: #0f172a;
+        }
+
         #panelAddBtn {
-            margin-top: 28px;
+            margin-top: 20px;
             width: 100%;
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             border: none;
-            padding: 14px;
+            padding: 12px;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: white;
+            border-radius: 40px;
         }
 
         #panelAddBtn:hover {
@@ -178,21 +197,19 @@
         }
 
         #monthYear {
-            font-size: 1.6rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: white;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             background: rgba(0, 0, 0, 0.2);
             padding: 6px 20px;
             border-radius: 40px;
             backdrop-filter: blur(4px);
-            letter-spacing: -0.3px;
         }
 
         .day-names {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
+            gap: 6px;
             margin: 20px 0 8px 0;
         }
 
@@ -200,10 +217,10 @@
             text-align: center;
             padding: 10px 6px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(4px);
-            border-radius: 40px;
+            border-radius: 30px;
             color: #4b5563;
             transition: all 0.2s ease;
         }
@@ -211,15 +228,14 @@
         #calendarGrid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
+            gap: 8px;
             margin-top: 8px;
         }
 
         .calendar-cell {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(4px);
-            border-radius: 20px;
-            min-height: 125px;
+            border-radius: 16px;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -227,27 +243,26 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            aspect-ratio: 1 / 1;
+            min-height: 0;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .calendar-cell:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
             background: white;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
 
         .date-number {
-            position: absolute;
-            top: 12px;
-            left: 14px;
             font-weight: 700;
             font-size: 1rem;
             background: rgba(0, 0, 0, 0.05);
-            backdrop-filter: blur(2px);
-            padding: 2px 10px;
-            border-radius: 30px;
+            padding: 3px 10px;
+            border-radius: 25px;
             color: #1f2937;
+            margin-bottom: 6px;
         }
 
         .badge-container {
@@ -255,20 +270,22 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 5px;
             width: 100%;
+            padding: 0 6px;
         }
 
         .badge {
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
             font-weight: 700;
-            letter-spacing: 0.3px;
             text-align: center;
-            min-width: 95px;
-            backdrop-filter: blur(4px);
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            white-space: normal;
+            word-break: break-word;
+            max-width: 95%;
+            line-height: 1.3;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .badge-pending {
@@ -282,21 +299,21 @@
         }
 
         .badge-none {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: #6b7280;
-            opacity: 0.7;
+            font-size: 0.75rem;
+            color: #9ca3af;
+            opacity: 0.6;
         }
 
+        /* Side Panel */
         #sidePanel {
             position: fixed;
-            right: -460px;
+            right: -420px;
             top: 0;
             width: 100%;
-            max-width: 420px;
+            max-width: 380px;
             height: 100%;
             background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            box-shadow: -8px 0 30px rgba(0, 0, 0, 0.25);
+            box-shadow: -4px 0 25px rgba(0, 0, 0, 0.2);
             transition: right 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             z-index: 1000;
             padding: 24px 20px;
@@ -314,13 +331,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
             border-bottom: 2px solid #e5e7eb;
         }
 
         .panel-header h3 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 700;
             background: linear-gradient(135deg, #818cf8, #c084fc);
             -webkit-background-clip: text;
@@ -340,7 +357,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 60px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
         }
 
         #closePanel:hover {
@@ -349,55 +367,46 @@
         }
 
         .section-title {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
-            margin: 24px 0 12px 0;
+            margin: 20px 0 10px 0;
             padding-bottom: 6px;
             border-bottom: 2px solid #e5e7eb;
         }
 
-        .section-title.pending {
-            color: #f97316;
-        }
-
-        .section-title.completed {
-            color: #22c55e;
-        }
+        .section-title.pending { color: #f97316; }
+        .section-title.completed { color: #22c55e; }
 
         .reminder-item-panel {
-            margin-bottom: 12px;
-            padding: 14px;
-            border-radius: 18px;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 14px;
             background: white;
             transition: all 0.2s ease;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             border: 1px solid #e5e7eb;
         }
 
-        .reminder-item-panel.pending {
-            border-left: 5px solid #f97316;
-        }
-
-        .reminder-item-panel.completed {
-            border-left: 5px solid #22c55e;
-            opacity: 0.8;
-        }
+        .reminder-item-panel.pending { border-left: 4px solid #f97316; }
+        .reminder-item-panel.completed { border-left: 4px solid #22c55e; opacity: 0.75; }
 
         .reminder-item-panel:hover {
-            transform: translateX(6px);
-            background: #f9fafb;
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .reminder-checkbox {
-            margin-right: 12px;
-            transform: scale(1.1);
+            margin-right: 10px;
+            transform: scale(1.05);
             accent-color: #22c55e;
+            cursor: pointer;
         }
 
         .reminder-text-panel {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 500;
             color: #1f2937;
+            word-break: break-word;
         }
 
         .reminder-time {
@@ -407,29 +416,29 @@
         }
 
         .repeat-badge {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             background: #e5e7eb;
-            padding: 3px 10px;
-            border-radius: 20px;
-            margin-left: 10px;
-            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 15px;
+            margin-left: 8px;
+            display: inline-block;
         }
 
         .delete-btn-panel {
             float: right;
             background: transparent;
             border: none;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
             color: #ef4444;
-            padding: 0 8px;
-            box-shadow: none;
+            padding: 0 6px;
+            transition: all 0.2s ease;
         }
 
         .delete-btn-panel:hover {
-            background: none;
-            transform: scale(1.2);
             color: #dc2626;
+            transform: scale(1.1);
+            background: transparent;
         }
 
         #addFormModal {
@@ -438,10 +447,10 @@
             left: 0;
             right: 0;
             background: white;
-            padding: 28px 24px 32px;
-            border-top-left-radius: 32px;
-            border-top-right-radius: 32px;
-            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.3);
+            padding: 24px;
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.2);
             z-index: 1001;
             transform: translateY(100%);
             transition: transform 0.3s ease-out;
@@ -452,15 +461,19 @@
             transform: translateY(0);
         }
 
+        #addFormModal h3 {
+            margin-bottom: 16px;
+            font-size: 1.2rem;
+        }
+
         #addFormModal input,
         #addFormModal select {
             width: 100%;
-            padding: 14px;
-            margin-bottom: 16px;
+            padding: 12px 16px;
+            margin-bottom: 14px;
             border: 1px solid #d1d5db;
-            border-radius: 60px;
+            border-radius: 40px;
             background: white;
-            color: #1f2937;
             font-size: 0.9rem;
             transition: all 0.2s ease;
         }
@@ -469,13 +482,13 @@
         #addFormModal select:focus {
             outline: none;
             border-color: #8b5cf6;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         }
 
         .modal-buttons {
             display: flex;
             gap: 12px;
-            margin-top: 8px;
+            margin-top: 10px;
         }
 
         .modal-buttons button {
@@ -484,8 +497,7 @@
             color: white;
             border: none;
             padding: 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
+            border-radius: 40px;
         }
 
         .modal-buttons button.cancel-modal {
@@ -502,7 +514,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 998;
             display: none;
             backdrop-filter: blur(3px);
@@ -514,35 +526,101 @@
 
         .empty-panel {
             text-align: center;
-            padding: 48px 20px;
+            padding: 40px 20px;
             color: #6b7280;
-            font-weight: 500;
+            font-size: 0.9rem;
         }
 
-        @media (max-width: 720px) {
+        /* Mobile Specific */
+        @media (max-width: 600px) {
             body {
-                padding: 16px;
+                padding: 12px;
             }
+            
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            
             .calendar-header {
-                border-radius: 30px;
-                padding: 10px 16px;
+                padding: 0.5rem 1rem;
+                gap: 0.5rem;
             }
-            .calendar-cell {
-                min-height: 95px;
-            }
-            .badge {
-                padding: 4px 8px;
-                min-width: 70px;
+            
+            .nav-buttons button {
+                padding: 6px 12px;
                 font-size: 0.7rem;
             }
-            .day-name {
+            
+            #themeToggleBtn {
+                padding: 6px 12px;
                 font-size: 0.7rem;
             }
+            
             #monthYear {
-                font-size: 1.2rem;
+                font-size: 1rem;
+                padding: 4px 12px;
             }
+            
+            .day-name {
+                font-size: 0.65rem;
+                padding: 6px 3px;
+            }
+            
+            .day-names {
+                gap: 4px;
+            }
+            
+            #calendarGrid {
+                gap: 5px;
+            }
+            
+            .calendar-cell {
+                border-radius: 12px;
+            }
+            
+            .date-number {
+                font-size: 0.85rem;
+                padding: 2px 8px;
+                margin-bottom: 3px;
+            }
+            
+            .badge {
+                padding: 3px 6px;
+                font-size: 0.6rem;
+            }
+            
+            .badge-container {
+                gap: 3px;
+            }
+            
             #sidePanel {
                 max-width: 100%;
+                padding: 20px 16px;
+            }
+            
+            .panel-header h3 {
+                font-size: 1.1rem;
+            }
+            
+            .reminder-item-panel {
+                padding: 10px;
+            }
+            
+            .reminder-text-panel {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Tablet */
+        @media (min-width: 601px) and (max-width: 900px) {
+            .calendar-cell {
+                aspect-ratio: 1 / 0.9;
+            }
+            
+            .badge {
+                font-size: 0.65rem;
+                padding: 3px 8px;
             }
         }
     </style>
@@ -586,7 +664,7 @@
 </div>
 
 <div id="addFormModal">
-    <h3 id="modalTitle" style="margin-bottom: 16px; color: inherit;">Add Reminder</h3>
+    <h3 id="modalTitle">Add Reminder</h3>
     <input type="text" id="taskTitle" placeholder="What needs to be done?" autocomplete="off">
     <input type="time" id="taskTime" value="09:00">
     <select id="repeatType">
@@ -639,7 +717,8 @@
         if ("Notification" in window && Notification.permission === "granted") {
             new Notification("⏰ " + title, {
                 body: message,
-                silent: false
+                silent: false,
+                icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234CAF50'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z'/%3E%3C/svg%3E"
             });
         }
     }
@@ -880,6 +959,7 @@
             empty.className = "calendar-cell";
             empty.style.background = "rgba(0,0,0,0.05)";
             empty.style.cursor = "default";
+            empty.style.boxShadow = "none";
             grid.appendChild(empty);
         }
         
@@ -896,7 +976,7 @@
             let today = new Date();
             if (today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === d) {
                 cell.style.border = "2px solid #facc15";
-                cell.style.boxShadow = "0 0 0 2px rgba(250,204,21,0.5)";
+                cell.style.boxShadow = "0 0 0 2px rgba(250,204,21,0.3)";
             }
             
             let stats = getDateStats(currentYear, currentMonth, d);
